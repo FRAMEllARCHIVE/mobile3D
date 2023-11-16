@@ -3,88 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.png" type="image/png">
-    <title>Explore the 3D Environment</title>
-    <!-- Include Babylon.js library -->
-    <script src="https://cdn.babylonjs.com/babylon.max.js"></script>
-    <script src="https://cdn.babylonjs.com/mobile.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Include Babylon.js GUI library -->
-    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
-    <style>
-        html, body {
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        canvas {
-            touch-action: none;
-        }
-    </style>
+    <title>PONDERINGFISH 3D</title>
+    <!-- Include A-Frame library -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 </head>
 <body>
-    <!-- Babylon.js canvas -->
-    <canvas id="renderCanvas"></canvas>
-
-    <!-- GUI panel for instructions -->
-    <div id="guiPanel" style="position: absolute; top: 10px; left: 10px;"></div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var canvas = document.getElementById("renderCanvas");
-            var engine = new BABYLON.Engine(canvas, true);
-            var scene = new BABYLON.Scene(engine);
-
-            // Use DeviceOrientationCamera for mobile devices
-            var camera = new BABYLON.DeviceOrientationCamera("camera", BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-
-            // Enable mobile touch controls
-            BABYLON.MobileVRHelper.Init(scene);
-            BABYLON.DeviceOrientationCamera.OrientationSensibility = 3000;
-
-            // GUI panel for instructions
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-            var guiPanel = new BABYLON.GUI.StackPanel();
-            guiPanel.width = "220px";
-            guiPanel.fontSize = "14px";
-            guiPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            guiPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            advancedTexture.addControl(guiPanel);
-
-            var header = new BABYLON.GUI.TextBlock();
-            header.text = "Explore the 3D Environment";
-            header.height = "40px";
-            header.color = "white";
-            guiPanel.addControl(header);
-
-            var instructions = new BABYLON.GUI.TextBlock();
-            instructions.text = "Swipe to Look Around\nPinch to Zoom\nTap to Move";
-            instructions.height = "100px";
-            instructions.color = "white";
-            guiPanel.addControl(instructions);
-
-            // Load a glTF model
-            BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene, function (meshes) {
-                if (meshes.length === 0) {
-                    console.error("Failed to load the glTF model.");
-                } else {
-                    console.log("GlTF model loaded successfully!");
-                }
-            }, undefined, function (scene, message) {
-                console.error("Unable to load from ./scene.glb:", message);
-            });
-
-            engine.runRenderLoop(function () {
-                scene.render();
-            });
-
-            window.addEventListener("resize", function () {
-                engine.resize();
-            });
-        });
-    </script>
+    <!-- A-Frame scene with embedded 3D model -->
+    <a-scene vr-mode-ui="enabled: false"> <!-- Disable VR mode UI for better mobile experience -->
+        <!-- Embed your 3D model here -->
+        <a-entity gltf-model="#sceneModel" scale="0.01 0.01 0.01"></a-entity>
+        
+        <!-- Camera and controls (optional) -->
+        <a-entity camera look-controls wasd-controls></a-entity>
+        
+        <!-- Lighting (optional) -->
+        <a-light type="ambient" color="#888"></a-light>
+        <a-light type="point" position="2 4 4"></a-light>
+        
+        <!-- Asset Management -->
+        <a-assets>
+            <a-asset-item id="sceneModel" src="scene.glb"></a-asset-item>
+        </a-assets>
+    </a-scene>
 </body>
 </html>
