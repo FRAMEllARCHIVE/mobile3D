@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Use favicon.png as the website icon -->
     <link rel="icon" href="favicon.png" type="image/png">
     <title>Your 3D Scene</title>
     <!-- Include Babylon.js library -->
@@ -19,7 +20,8 @@
             var engine = new BABYLON.Engine(canvas, true);
             var scene = new BABYLON.Scene(engine);
 
-            var camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+            // Use DeviceOrientationCamera for mobile devices
+            var camera = new BABYLON.DeviceOrientationCamera("camera", BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
             var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
