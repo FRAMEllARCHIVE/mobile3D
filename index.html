@@ -24,6 +24,53 @@
             var camera = new BABYLON.DeviceOrientationCamera("camera", BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
+            // Add touch control for movement
+            var startingPoint;
+            var currentMesh;
+
+            canvas.addEventListener("pointerdown", function (event) {
+                if (event.pointerType === "touch") {
+                    startingPoint = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
+                }
+            });
+
+            canvas.addEventListener("pointerup", function (event) {
+                if (event.pointerType === "touch" && startingPoint) {
+                    var endingPoint = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
+
+                    var deltaX = endingPoint.x - startingPoint.x;
+                    var deltaY = endingPoint.y - startingPoint.y;
+
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                        // Horizontal swipe
+                        if (deltaX > 0) {
+                            // Move right
+                            camera.position.x += 1;
+                        } else {
+                            // Move left
+                            camera.position.x -= 1;
+                        }
+                    } else {
+                        // Vertical swipe
+                        if (deltaY > 0) {
+                            // Move backward
+                            camera.position.z += 1;
+                        } else {
+                            // Move forward
+                            camera.position.z -= 1;
+                        }
+                    }
+
+                    startingPoint = null;
+                }
+            });
+
             var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
             // Explicitly set the loader for .glb files
