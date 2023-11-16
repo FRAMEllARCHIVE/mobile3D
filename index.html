@@ -3,26 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.png" type="image/x-icon">
-    <title>PONDERINGFISH 3D</title>
-    <!-- Include A-Frame library and AR.js -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.3.1/aframe/build/aframe-ar.js"></script>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <title>Your 3D Scene</title>
+    <!-- Include Babylon.js library -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 </head>
 <body>
-    <!-- A-Frame scene with embedded 3D model -->
-    <a-scene ar>
-        <!-- Embed your 3D model here -->
-        <a-entity gltf-model="path/to/your/scene.glb"></a-entity>
-        
-        <!-- Camera and controls (optional) -->
-        <a-camera gps-camera rotation-reader>
-            <a-cursor></a-cursor>
-        </a-camera>
-       
-        <!-- Lighting (optional) -->
-        <a-light type="ambient" color="#888"></a-light>
-        <a-light type="point" position="2 4 4"></a-light>
-    </a-scene>
+    <!-- Babylon.js canvas -->
+    <canvas id="renderCanvas"></canvas>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var canvas = document.getElementById("renderCanvas");
+            var engine = new BABYLON.Engine(canvas, true);
+            var scene = new BABYLON.Scene(engine);
+
+            var camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+
+            var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+            // Explicitly set the loader for .glb files
+            BABYLON.SceneLoader.RegisterPlugin(new BABYLON.GLTFFileLoader());
+
+            // Load a glTF model
+            BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene, function (meshes) {
+                if (meshes.length === 0) {
+                    console.error("Failed to load the glTF model.");
+                } else {
+                    console.log("GlTF model loaded successfully!");
+                }
+            }, undefined, function (scene, message) {
+                console.error("Unable to load from ./scene.glb:", message);
+            });
+
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+        });
+    </script>
 </body>
 </html>
