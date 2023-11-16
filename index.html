@@ -3,16 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Use favicon.png as the website icon -->
     <link rel="icon" href="favicon.png" type="image/png">
-    <title>Your 3D Scene</title>
+    <title>Explore the 3D Environment</title>
     <!-- Include Babylon.js library -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Include Babylon.js mobile touch extension -->
+    <script src="https://cdn.babylonjs.com/mobile.js"></script>
+    <!-- Include Babylon.js GUI library -->
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
 </head>
 <body>
     <!-- Babylon.js canvas -->
     <canvas id="renderCanvas"></canvas>
+
+    <!-- GUI panel for instructions -->
+    <div id="guiPanel" style="position: absolute; top: 10px; left: 10px;"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -24,57 +42,30 @@
             var camera = new BABYLON.DeviceOrientationCamera("camera", BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
-            // Add touch control for movement
-            var startingPoint;
-            var currentMesh;
+            // Enable mobile touch controls
+            BABYLON.MobileVRHelper.Init(scene);
+            BABYLON.DeviceOrientationCamera.OrientationSensibility = 3000;
 
-            canvas.addEventListener("pointerdown", function (event) {
-                if (event.pointerType === "touch") {
-                    startingPoint = {
-                        x: event.clientX,
-                        y: event.clientY
-                    };
-                }
-            });
+            // GUI panel for instructions
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            var guiPanel = new BABYLON.GUI.StackPanel();
+            guiPanel.width = "220px";
+            guiPanel.fontSize = "14px";
+            guiPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            guiPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            advancedTexture.addControl(guiPanel);
 
-            canvas.addEventListener("pointerup", function (event) {
-                if (event.pointerType === "touch" && startingPoint) {
-                    var endingPoint = {
-                        x: event.clientX,
-                        y: event.clientY
-                    };
+            var header = new BABYLON.GUI.TextBlock();
+            header.text = "Explore the 3D Environment";
+            header.height = "40px";
+            header.color = "white";
+            guiPanel.addControl(header);
 
-                    var deltaX = endingPoint.x - startingPoint.x;
-                    var deltaY = endingPoint.y - startingPoint.y;
-
-                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                        // Horizontal swipe
-                        if (deltaX > 0) {
-                            // Move right
-                            camera.position.x += 1;
-                        } else {
-                            // Move left
-                            camera.position.x -= 1;
-                        }
-                    } else {
-                        // Vertical swipe
-                        if (deltaY > 0) {
-                            // Move backward
-                            camera.position.z += 1;
-                        } else {
-                            // Move forward
-                            camera.position.z -= 1;
-                        }
-                    }
-
-                    startingPoint = null;
-                }
-            });
-
-            var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-            // Explicitly set the loader for .glb files
-            BABYLON.SceneLoader.RegisterPlugin(new BABYLON.GLTFFileLoader());
+            var instructions = new BABYLON.GUI.TextBlock();
+            instructions.text = "Swipe to Look Around\nPinch to Zoom\nTap to Move";
+            instructions.height = "100px";
+            instructions.color = "white";
+            guiPanel.addControl(instructions);
 
             // Load a glTF model
             BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene, function (meshes) {
