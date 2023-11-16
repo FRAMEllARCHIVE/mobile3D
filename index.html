@@ -9,21 +9,18 @@
 </head>
 <body>
     <!-- A-Frame scene with embedded 3D model -->
-    <a-scene vr-mode-ui="enabled: false"> <!-- Disable VR mode UI for better mobile experience -->
+    <a-scene>
         <!-- Embed your 3D model here -->
-        <a-entity gltf-model="#sceneModel" scale="0.01 0.01 0.01"></a-entity>
+<a-entity gltf-model="scene.glb" scale="0.1 0.1 0.1"></a-entity>
         
         <!-- Camera and controls (optional) -->
-        <a-entity camera look-controls wasd-controls></a-entity>
+        <a-camera position="0 1.6 0">
+            <a-cursor></a-cursor>
+        </a-camera>
         
         <!-- Lighting (optional) -->
         <a-light type="ambient" color="#888"></a-light>
         <a-light type="point" position="2 4 4"></a-light>
-        
-        <!-- Asset Management -->
-        <a-assets>
-            <a-asset-item id="sceneModel" src="scene.glb"></a-asset-item>
-        </a-assets>
     </a-scene>
 </body>
 </html>
